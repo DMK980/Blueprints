@@ -13,8 +13,14 @@ imports this file and adds one extra step that only applies there.
 
 1. **Interview the user** using the checklist below, one question at a
    time (not a wall of questions at once) — this is a conversation, not a
-   form. Then open each applicable file in `rules/` and work through its
-   own "Questions to answer" section the same way.
+   form. For every question except what the product does and how the
+   mechanism works, you MUST invoke the host's multiple-choice tool
+   (`AskQuestion` in Cursor, Claude Code's question tool) with a few
+   options — the write-in/Other is built in, don't duplicate it. Do not
+   ask those as a free-text chat message; a numbered list in prose is
+   not a picker. If no such tool exists, then print numbered options
+   ending in `Other`. Then open each applicable file in `rules/` and
+   work through its own "Questions to answer" section the same way.
 2. **Write this file's opening paragraph** — replace the `[REPLACE: ...]`
    block below with the real one-paragraph description, from the answers
    you got. If there's no genuine defining mechanism, say so plainly

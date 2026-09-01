@@ -1,5 +1,8 @@
 @AGENTS.md
 
+For the interview, you MUST use Claude Code's question tool (multiple
+choice + Other). Do not ask closed-fork questions as free-text.
+
 ## Claude Code
 
 Everything above is the full, model-agnostic procedure — follow it as
