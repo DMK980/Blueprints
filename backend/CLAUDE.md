@@ -1,5 +1,7 @@
 @AGENTS.md
 
+For the interview, use Claude Code's question tool (multiple choice + Other).
+
 ## Claude Code
 
 Everything above is the full, model-agnostic procedure — follow it as

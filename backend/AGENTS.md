@@ -13,8 +13,11 @@ imports this file and adds one extra step that only applies there.
 
 1. **Interview the user** using the checklist below, one question at a
    time (not a wall of questions at once) — this is a conversation, not a
-   form. Then open each applicable file in `rules/` and work through its
-   own "Questions to answer" section the same way.
+   form. Prefer multiple choice with a write-in (the host's picker UI if
+   it has one, otherwise numbered options ending in `Other`); keep what
+   the product does and how the mechanism works as typed answers. Then
+   open each applicable file in `rules/` and work through its own
+   "Questions to answer" section the same way.
 2. **Write this file's opening paragraph** — replace the `[REPLACE: ...]`
    block below with the real one-paragraph description, from the answers
    you got. If there's no genuine defining mechanism, say so plainly
