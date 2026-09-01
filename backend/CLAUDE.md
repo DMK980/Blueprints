@@ -1,6 +1,7 @@
 @AGENTS.md
 
-For the interview, use Claude Code's question tool (multiple choice + Other).
+For the interview, you MUST use Claude Code's question tool (multiple
+choice + Other). Do not ask closed-fork questions as free-text.
 
 ## Claude Code
 
