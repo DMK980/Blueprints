@@ -1,6 +1,0 @@
----
-description: Spec interview must use AskQuestion pickers
-alwaysApply: true
----
-
-When following `backend/AGENTS.md` to run the spec interview, ask every closed-fork question with the `AskQuestion` tool (a few options; Other is built in). Do not ask those as a free-text chat message. Typed answers only for what the product does and how the mechanism works.
