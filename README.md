@@ -89,10 +89,12 @@ right.
 ## Landing page
 
 `docs/index.html` is a self-contained landing page (no build step, no
-dependencies beyond two Google Fonts). To serve it live: on GitHub, go to
-**Settings → Pages**, set **Source** to `Deploy from a branch`, pick the
-`main` branch and the `/docs` folder, then save. It'll be live at
-`https://dmk980.github.io/Blueprints/` shortly after.
+dependencies beyond two Google Fonts). `docs/guide.html`, linked from its
+nav, is the actual documentation — install flags, how the interview and
+build order work, and a full CRUD-API tutorial. To serve it live: on
+GitHub, go to **Settings → Pages**, set **Source** to `Deploy from a
+branch`, pick the `main` branch and the `/docs` folder, then save. It'll
+be live at `https://dmk980.github.io/Blueprints/` shortly after.
 
 ## Current status
 
