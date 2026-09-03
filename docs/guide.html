@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide — Blueprints</title>
+<meta name="description" content="Install the backend blueprint, run the interview, and follow one full CRUD-API tutorial from a bare folder to a working, tested backend.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230c2944'/%3E%3Cpath d='M4 26 L16 5 L28 26 Z' stroke='%23e9f2f7' stroke-width='1.8' fill='none'/%3E%3Cpath d='M4 26 H28' stroke='%23e9f2f7' stroke-width='1.8'/%3E%3Cpath d='M12 26 V17.5 L16 11 L20 17.5 V26' stroke='%23e2853f' stroke-width='1.8' fill='none'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #eef3f6;
+    --paper-deep: #e2eaef;
+    --line: #10314f;
+    --line-dim: rgba(16, 49, 79, 0.32);
+    --line-faint: rgba(16, 49, 79, 0.14);
+    --accent: #ad4e1d;
+    --accent-ink: #fdf3ea;
+    --radius: 0px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0c2944;
+      --paper-deep: #0a2038;
+      --line: #e9f2f7;
+      --line-dim: rgba(233, 242, 247, 0.32);
+      --line-faint: rgba(233, 242, 247, 0.1);
+      --accent: #e2853f;
+      --accent-ink: #0a2038;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0c2944;
+    --paper-deep: #0a2038;
+    --line: #e9f2f7;
+    --line-dim: rgba(233, 242, 247, 0.32);
+    --line-faint: rgba(233, 242, 247, 0.1);
+    --accent: #e2853f;
+    --accent-ink: #0a2038;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
+  body {
+    margin: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+    background: var(--paper);
+    color: var(--line);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    background-image:
+      linear-gradient(var(--line-faint) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-faint) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  img, svg { max-width: 100%; }
+  h1, h2, h3 { font-family: "Space Grotesk", ui-sans-serif, sans-serif; font-weight: 600; margin: 0; text-wrap: balance; }
+  p { margin: 0; }
+  a { color: inherit; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  .wrap { max-width: 1220px; margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 2.5rem); }
+  .label {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--line-dim);
+  }
+  section { position: relative; }
+
+  /* ---------- nav (shared with index.html) ---------- */
+  header.nav {
+    position: sticky; top: 0; z-index: 40;
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line-dim);
+  }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 68px; gap: 1.5rem; }
+  .brand { display: flex; align-items: center; gap: 0.6rem; font-family: "Space Grotesk", sans-serif; font-weight: 600; letter-spacing: 0.02em; font-size: 1.05rem; text-decoration: none; }
+  .brand svg { width: 26px; height: 26px; flex: none; }
+  nav.links { display: flex; align-items: center; gap: 2rem; }
+  nav.links a { font-size: 0.9rem; text-decoration: none; color: var(--line); opacity: 0.82; border-bottom: 1px solid transparent; padding-bottom: 2px; transition: opacity 0.15s ease, border-color 0.15s ease; }
+  nav.links a:hover, nav.links a.current { opacity: 1; border-color: var(--line-dim); }
+  .nav-cta-wrap { display: flex; align-items: center; gap: 1rem; }
+  .hamburger { display: none; background: none; border: 1px solid var(--line-dim); width: 40px; height: 36px; align-items: center; justify-content: center; cursor: pointer; }
+  .hamburger span, .hamburger span::before, .hamburger span::after { content: ""; display: block; width: 18px; height: 1.5px; background: var(--line); position: relative; }
+  .hamburger span::before { position: absolute; top: -6px; }
+  .hamburger span::after { position: absolute; top: 6px; }
+  .mobile-menu { display: none; }
+
+  /* buttons */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    font-family: "IBM Plex Mono", monospace; font-size: 0.82rem; letter-spacing: 0.03em;
+    padding: 0.7rem 1.15rem; text-decoration: none; white-space: nowrap;
+    border: 1px solid var(--line); transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+  }
+  .btn:active { transform: translateY(1px) scale(0.98); }
+  .btn-solid { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  .btn-solid:hover { background: color-mix(in srgb, var(--accent) 88%, var(--line) 12%); }
+  .btn-ghost { background: transparent; color: var(--line); }
+  .btn-ghost:hover { background: var(--line-faint); }
+
+  /* ---------- code card (shared) ---------- */
+  .code-card { border: 1px solid var(--line-dim); background: var(--paper-deep); min-width: 0; }
+  .code-card .code-head { display: flex; align-items: center; justify-content: space-between; padding: 0.55rem 0.85rem; border-bottom: 1px solid var(--line-dim); gap: 0.75rem; }
+  .code-card .code-head span { font-family: "IBM Plex Mono", monospace; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--line-dim); min-width: 0; }
+  .code-card pre { margin: 0; padding: 0.95rem 0.9rem; overflow-x: auto; font-family: "IBM Plex Mono", monospace; font-size: 0.84rem; line-height: 1.55; }
+  .copy-btn { flex: none; background: none; border: 1px solid var(--line-dim); color: var(--line); font-family: "IBM Plex Mono", monospace; font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.3rem 0.55rem; cursor: pointer; transition: background 0.15s ease; }
+  .copy-btn:hover { background: var(--line-faint); }
+
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1); }
+  .reveal.is-visible { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    html { scroll-behavior: auto; }
+  }
+
+  /* ---------- page header ---------- */
+  .guide-hero { padding: clamp(2.25rem, 5vw, 3.5rem) 0 clamp(2rem, 4vw, 3rem); border-bottom: 1px solid var(--line-dim); }
+  .guide-hero h1 { margin-top: 0.75rem; font-size: clamp(2.1rem, 4vw, 3rem); letter-spacing: -0.01em; }
+  .guide-hero p { margin-top: 1rem; max-width: 62ch; font-size: 1.02rem; color: color-mix(in srgb, var(--line) 80%, transparent); }
+  .guide-hero .jump { margin-top: 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+  /* ---------- two-column guide layout ---------- */
+  .guide-layout { padding: clamp(2.5rem, 5vw, 4rem) 0 clamp(4rem, 7vw, 6rem); display: grid; grid-template-columns: 190px 1fr; gap: clamp(2rem, 4vw, 3.5rem); align-items: start; }
+  .guide-layout > * { min-width: 0; }
+  .toc { position: sticky; top: 88px; }
+  .toc > ul { list-style: none; margin: 0.9rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 0.65rem; border-left: 1px solid var(--line-dim); }
+  .toc a { display: block; margin-left: -1px; padding-left: 0.9rem; font-size: 0.86rem; text-decoration: none; color: var(--line); opacity: 0.66; border-left: 2px solid transparent; transition: opacity 0.15s ease, border-color 0.15s ease, color 0.15s ease; }
+  .toc a:hover { opacity: 1; }
+  .toc a.active { opacity: 1; color: var(--accent); border-left-color: var(--accent); }
+  .toc ul ul { list-style: none; margin: 0.5rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 0.45rem; }
+  .toc ul ul a { padding-left: 1.6rem; font-size: 0.77rem; opacity: 0.5; }
+  .toc ul ul a:hover { opacity: 0.85; }
+  .toc ul ul a.active { opacity: 1; }
+
+  .guide-content { display: flex; flex-direction: column; gap: clamp(3.5rem, 6vw, 5.5rem); min-width: 0; }
+  .guide-section { min-width: 0; scroll-margin-top: 84px; }
+  .guide-section h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); }
+  .guide-section > p.lead { margin-top: 0.75rem; max-width: 60ch; color: color-mix(in srgb, var(--line) 78%, transparent); }
+
+  /* ---------- flag/option list ---------- */
+  .opts { margin-top: 1.5rem; display: grid; grid-template-columns: max-content 1fr; gap: 0.55rem 1.5rem; font-size: 0.9rem; }
+  .opts dt { font-family: "IBM Plex Mono", monospace; color: var(--accent); white-space: nowrap; min-width: 0; }
+  .opts dd { margin: 0; color: color-mix(in srgb, var(--line) 82%, transparent); min-width: 0; }
+
+  /* ---------- numbered step list (usage + tutorial) ---------- */
+  .steps { margin-top: 2rem; display: flex; flex-direction: column; gap: 2.25rem; }
+  .step { display: grid; grid-template-columns: 52px 1fr; gap: 1.1rem; scroll-margin-top: 84px; }
+  .step-num { width: 52px; height: 52px; flex: none; border: 1.5px solid var(--line); display: flex; align-items: center; justify-content: center; font-family: "IBM Plex Mono", monospace; font-size: 1.05rem; color: var(--accent); }
+  .step-body { min-width: 0; }
+  .step-body h3 { font-size: 1.05rem; }
+  .step-body p { margin-top: 0.5rem; font-size: 0.94rem; color: color-mix(in srgb, var(--line) 80%, transparent); }
+  .step-body .code-card, .step-body .transcript, .step-body .opts, .step-body .phase-list { margin-top: 1rem; }
+
+  /* ---------- interview transcript ---------- */
+  .transcript { border: 1px solid var(--line-dim); background: var(--paper-deep); }
+  .transcript .qa { padding: 0.85rem 1rem; border-top: 1px solid var(--line-dim); }
+  .transcript .qa:first-child { border-top: none; }
+  .transcript .q { display: flex; gap: 0.45rem; font-family: "IBM Plex Mono", monospace; font-size: 0.78rem; color: var(--accent); letter-spacing: 0.01em; }
+  .transcript .q::before { content: "Q"; flex: none; opacity: 0.55; }
+  .transcript .a { margin-top: 0.4rem; font-size: 0.92rem; padding-left: 1.1rem; }
+
+  /* ---------- backend file reference ---------- */
+  .filedocs { margin-top: 2rem; display: flex; flex-direction: column; }
+  .filedoc { padding: 1.35rem 0; border-top: 1px solid var(--line-dim); display: grid; grid-template-columns: 230px 1fr; gap: 1.5rem; }
+  .filedoc > * { min-width: 0; }
+  .filedoc:first-child { border-top: none; }
+  .filedoc .fname { font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 0.92rem; }
+  .filedoc .ftag { display: block; margin-top: 0.4rem; font-family: "IBM Plex Mono", monospace; font-size: 0.66rem; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent); }
+  .filedoc.optional .ftag { color: var(--line-dim); }
+  .filedoc p { font-size: 0.92rem; color: color-mix(in srgb, var(--line) 82%, transparent); }
+
+  /* ---------- build-order phase list ---------- */
+  .phase-list { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.9rem; padding: 0; list-style: none; }
+  .phase-list li { display: grid; grid-template-columns: 26px 1fr; gap: 0.85rem; font-size: 0.92rem; color: color-mix(in srgb, var(--line) 84%, transparent); }
+  .phase-list li > * { min-width: 0; }
+  .phase-list .n { font-family: "IBM Plex Mono", monospace; color: var(--line-dim); }
+  .phase-list b { font-family: "IBM Plex Mono", monospace; font-weight: 600; color: var(--line); }
+
+  /* ---------- footer titleblock (shared) ---------- */
+  footer { border-top: 1px solid var(--line-dim); padding: clamp(2.5rem, 5vw, 3.5rem) 0 2.5rem; }
+  .footer-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 2.5rem; align-items: start; }
+  .footer-grid > * { min-width: 0; }
+  .footer-brand { display: flex; align-items: center; gap: 0.6rem; font-family: "Space Grotesk", sans-serif; font-weight: 600; font-size: 1.05rem; }
+  .footer-brand svg { width: 24px; height: 24px; }
+  .footer-copy { margin-top: 0.85rem; max-width: 40ch; font-size: 0.92rem; color: color-mix(in srgb, var(--line) 78%, transparent); }
+  .ftb { border: 1px solid var(--line-dim); font-family: "IBM Plex Mono", monospace; font-size: 0.74rem; }
+  .ftb .row { display: grid; grid-template-columns: minmax(0, 34%) minmax(0, 66%); border-top: 1px solid var(--line-dim); }
+  .ftb .row:first-child { border-top: none; }
+  .ftb .row div { padding: 0.45rem 0.65rem; min-width: 0; overflow-wrap: anywhere; }
+  .ftb .row div:first-child { color: var(--line-dim); letter-spacing: 0.06em; text-transform: uppercase; border-right: 1px solid var(--line-dim); }
+  .foot-bottom { margin-top: 2.2rem; padding-top: 1.2rem; border-top: 1px solid var(--line-dim); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; font-size: 0.82rem; color: var(--line-dim); }
+  .foot-bottom > * { min-width: 0; overflow-wrap: anywhere; }
+  .foot-bottom a { text-decoration: underline; text-underline-offset: 3px; }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 860px) {
+    nav.links, .nav-cta-wrap .btn-ghost { display: none; }
+    .hamburger { display: flex; }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu { position: absolute; top: 68px; left: 0; right: 0; background: var(--paper); border-bottom: 1px solid var(--line-dim); flex-direction: column; padding: 1rem clamp(1.25rem, 4vw, 2.5rem) 1.4rem; gap: 0.9rem; }
+    .mobile-menu a { text-decoration: none; color: var(--line); font-size: 0.95rem; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .guide-layout { grid-template-columns: 1fr; }
+    .toc { position: static; padding-bottom: 1.1rem; border-bottom: 1px solid var(--line-dim); }
+    .toc > ul { flex-direction: row; flex-wrap: wrap; border-left: none; gap: 1.1rem; }
+    .toc a { margin-left: 0; padding-left: 0; border-left: none; border-bottom: 2px solid transparent; padding-bottom: 0.2rem; }
+    .toc a.active { border-left-color: transparent; border-bottom-color: var(--accent); }
+    .toc ul ul { display: none; }
+    .step { grid-template-columns: 40px 1fr; }
+    .step-num { width: 40px; height: 40px; font-size: 0.9rem; }
+    .filedoc { grid-template-columns: 1fr; gap: 0.5rem; }
+    .opts { grid-template-columns: 1fr; gap: 0.15rem 0; }
+    .opts dt { margin-top: 0.9rem; }
+    .opts dt:first-child { margin-top: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="index.html">
+      <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <path d="M4 26 L16 5 L28 26 Z" stroke="var(--line)" stroke-width="1.6"/>
+        <path d="M4 26 H28" stroke="var(--line)" stroke-width="1.6"/>
+        <path d="M12 26 V17.5 L16 11 L20 17.5 V26" stroke="var(--accent)" stroke-width="1.6"/>
+      </svg>
+      BLUEPRINTS
+    </a>
+    <nav class="links">
+      <a href="index.html#index">Drawing Index</a>
+      <a href="index.html#procedure">Procedure</a>
+      <a href="index.html#legend">Specification</a>
+      <a href="guide.html" class="current">Docs</a>
+    </nav>
+    <div class="nav-cta-wrap">
+      <a class="btn btn-ghost" href="https://github.com/DMK980/Blueprints" target="_blank" rel="noopener">View on GitHub</a>
+      <button type="button" class="hamburger" id="hamburger-btn" aria-label="Toggle menu" aria-expanded="false"><span></span></button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="index.html#index">Drawing Index</a>
+    <a href="index.html#procedure">Procedure</a>
+    <a href="index.html#legend">Specification</a>
+    <a href="guide.html">Docs</a>
+    <a href="https://github.com/DMK980/Blueprints" target="_blank" rel="noopener">View on GitHub</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="guide-hero">
+    <div class="wrap">
+      <span class="label mono">SHEET A-102 · GUIDE</span>
+      <h1>Install it. Answer the interview. Ship a CRUD API.</h1>
+      <p>This page covers the install command, how the interview and the finished spec actually work, and one full example — a small task-tracking API — followed start to finish.</p>
+      <div class="jump">
+        <a class="btn btn-solid" href="#tutorial">Jump to the tutorial</a>
+        <a class="btn btn-ghost" href="#install">Install</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap guide-layout">
+    <nav class="toc" aria-label="On this page">
+      <span class="label mono">On this page</span>
+      <ul>
+        <li><a href="#install">Install</a></li>
+        <li>
+          <a href="#usage">Usage</a>
+          <ul>
+            <li><a href="#usage-1">Start a session</a></li>
+            <li><a href="#usage-2">Interview order</a></li>
+            <li><a href="#usage-3">Files rewritten</a></li>
+            <li><a href="#usage-4">Spec now, code later</a></li>
+          </ul>
+        </li>
+        <li><a href="#reference">Reference</a></li>
+        <li>
+          <a href="#tutorial">Tutorial</a>
+          <ul>
+            <li><a href="#tutorial-1">Prerequisites</a></li>
+            <li><a href="#tutorial-2">Install</a></li>
+            <li><a href="#tutorial-3">Run the interview</a></li>
+            <li><a href="#tutorial-4">What you get</a></li>
+            <li><a href="#tutorial-5">Build it</a></li>
+            <li><a href="#tutorial-6">Try it</a></li>
+          </ul>
+        </li>
+        <li><a href="#next">Next steps</a></li>
+      </ul>
+    </nav>
+
+    <div class="guide-content">
+      <section class="guide-section reveal" id="install">
+        <h2>Install</h2>
+        <p class="lead">No git clone, no npm install, no plugin system — just <span class="mono">curl</span>/<span class="mono">tar</span>, or PowerShell.</p>
+
+        <div class="code-card" style="margin-top:1.5rem;">
+          <div class="code-head">
+            <span>macOS · Linux · git-bash · WSL</span>
+            <button class="copy-btn" data-copy="curl -fsSL https://raw.githubusercontent.com/DMK980/Blueprints/main/install.sh | bash -s -- backend">Copy</button>
+          </div>
+          <pre class="mono">curl -fsSL https://raw.githubusercontent.com/DMK980/Blueprints/main/install.sh | bash -s -- backend</pre>
+        </div>
+
+        <div class="code-card" style="margin-top:1rem;">
+          <div class="code-head">
+            <span>Windows PowerShell</span>
+            <button class="copy-btn" data-copy="iwr -useb https://raw.githubusercontent.com/DMK980/Blueprints/main/install.ps1 -OutFile install.ps1
+.\install.ps1 backend">Copy</button>
+          </div>
+          <pre class="mono">iwr -useb https://raw.githubusercontent.com/DMK980/Blueprints/main/install.ps1 -OutFile install.ps1
+.\install.ps1 backend</pre>
+        </div>
+
+        <dl class="opts">
+          <dt>[destination]</dt>
+          <dd>Install somewhere other than <span class="mono">./backend</span> — e.g. <span class="mono">... -- backend ./server</span> (bash) or <span class="mono">.\install.ps1 backend .\server</span> (PowerShell).</dd>
+          <dt>--force / -Force</dt>
+          <dd>Overwrite the destination if it already exists. Without it, the installer refuses rather than clobbering a folder that's already there.</dd>
+          <dt>No script?</dt>
+          <dd>Copy the <span class="mono">backend/</span> folder out of this repo yourself. The installer is a convenience, not a requirement.</dd>
+        </dl>
+      </section>
+
+      <section class="guide-section reveal" id="usage">
+        <h2>Usage</h2>
+        <p class="lead">Everything after install happens inside a coding-agent session. You never edit these files yourself.</p>
+
+        <div class="steps">
+          <div class="step" id="usage-1">
+            <div class="step-num mono">1</div>
+            <div class="step-body">
+              <h3>Start a session in the installed project</h3>
+              <p>In Claude Code, that's it — it auto-loads <span class="mono">backend/CLAUDE.md</span>, which pulls in the full procedure. Any other coding agent: tell it to follow the instructions in <span class="mono">backend/AGENTS.md</span>.</p>
+            </div>
+          </div>
+          <div class="step" id="usage-2">
+            <div class="step-num mono">2</div>
+            <div class="step-body">
+              <h3>The interview runs in a fixed order</h3>
+              <p><span class="mono">INTERVIEW.md</span> asks the product description and its defining mechanism first, then roles, money, and LLM use, then each file under <span class="mono">rules/</span> in the order that keeps every cross-reference pointing at something already answered — data model, then business logic, then auth, then routes, then security, and only then the stack, deliberately last, once your actual requirements are known instead of guessed.</p>
+            </div>
+          </div>
+          <div class="step" id="usage-3">
+            <div class="step-num mono">3</div>
+            <div class="step-body">
+              <h3>Every file gets rewritten with real content</h3>
+              <p>Each <span class="mono">rules/*.md</span> file's "Questions to answer" gets replaced with concrete, product-specific rules and the reasoning behind them — not generic best-practice filler. <span class="mono">llm-integration.md</span> is deleted by default unless you confirmed the product genuinely calls a model. A file that outgrows one topic gets split into its own subdirectory.</p>
+            </div>
+          </div>
+          <div class="step" id="usage-4">
+            <div class="step-num mono">4</div>
+            <div class="step-body">
+              <h3>Spec now, code later</h3>
+              <p>This pass produces the spec, not the app. Building the real backend against it is a separate, later ask — <span class="mono">BUILD-ORDER.md</span> then runs its own phase order (infrastructure first, domain logic later), which is close to the reverse of the interview's order on purpose: one is optimized for what's safe to ask about, the other for what's safe to build against.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="guide-section reveal" id="reference">
+        <h2>Reference: the backend files</h2>
+        <p class="lead">What the agent actually writes into <span class="mono">backend/rules/</span>, plus the two procedure files that drive the interview and the build. This is the vocabulary the tutorial below uses.</p>
+
+        <div class="filedocs">
+          <div class="filedoc">
+            <div><span class="fname">rules/data-models.md</span><span class="ftag">Interview file 1</span></div>
+            <p>Every table: columns, keys, and constraints, plus what's computed instead of stored. Also settles primary-key strategy (sequential vs. UUID), the soft-delete-vs-hard-delete convention, and foreign-key delete behavior — schema-level decisions most other files build on, so it's asked first.</p>
+          </div>
+          <div class="filedoc">
+            <div><span class="fname">rules/business-logic.md</span><span class="ftag">Interview file 2</span></div>
+            <p>The actual algorithms and formulas behind the product's defining mechanism, in enough procedural detail that two engineers would build the same thing. Where pricing/charging rules and race-safety on any shared resource live, if money moves through the system. If there's no real mechanism, this file says so plainly instead of inventing one.</p>
+          </div>
+          <div class="filedoc">
+            <div><span class="fname">rules/auth.md</span><span class="ftag">Interview file 4</span></div>
+            <p>Sign-in method, session mechanics (session-based vs. JWT, token transport, refresh-token rotation), roles, the password-reset flow, and how account deletion actually behaves against shared or owned data.</p>
+          </div>
+          <div class="filedoc">
+            <div><span class="fname">rules/api-routes.md</span><span class="ftag">Interview file 5</span></div>
+            <p>Every route, grouped by purpose, with its request shape and the specific error cases a client needs to branch on. Cross-references <span class="mono">business-logic.md</span> instead of re-explaining the logic inline.</p>
+          </div>
+          <div class="filedoc">
+            <div><span class="fname">rules/error-handling.md</span><span class="ftag">Interview file 6</span></div>
+            <p>The one response envelope and status-code table every route uses, plus a global exception handler that never leaks a raw stack trace to the client — decided once, here, instead of every route improvising its own shape.</p>
+          </div>
+          <div class="filedoc">
+            <div><span class="fname">rules/security-practices.md</span><span class="ftag">Interview file 7</span></div>
+            <p>Rate limiting, input validation, query safety, mass-assignment protection, row-level security policies, CORS/CSRF, and file uploads — the cross-cutting protections layered on top of auth and the routes.</p>
+          </div>
+          <div class="filedoc">
+            <div><span class="fname">rules/engineering-standards.md</span><span class="ftag">Interview file 8 — stack decided here</span></div>
+            <p>Stack, project structure, and deployment, reasoned from everything the interview surfaced earlier rather than picked by default. Also backups/disaster-recovery, secrets management, and payment/email providers where relevant.</p>
+          </div>
+          <div class="filedoc">
+            <div><span class="fname">rules/observability.md</span><span class="ftag">Interview file 9</span></div>
+            <p>Correlation ids, structured logging, real error tracking, metrics on this product's own easy-to-get-wrong failure modes, and the two health-check routes a hosting platform needs for a safe deploy.</p>
+          </div>
+          <div class="filedoc">
+            <div><span class="fname">rules/testing.md</span><span class="ftag">Interview file 10</span></div>
+            <p>The test pyramid scoped to this specific product, an explicit row-level-security-role callout if RLS is used, and what actually runs in CI versus what only runs on merge.</p>
+          </div>
+          <div class="filedoc optional">
+            <div><span class="fname">rules/llm-integration.md</span><span class="ftag">Optional — interview file 3</span></div>
+            <p>Deleted by default. Kept only if the product genuinely calls an LLM: the model-owns-conversation / backend-owns-every-write rule, tool design, and a separate eval suite that never gates a normal pull request.</p>
+          </div>
+          <div class="filedoc">
+            <div><span class="fname">INTERVIEW.md</span><span class="ftag">Procedure</span></div>
+            <p>The ordered interview itself — which question gets asked when, and why nothing is asked before what it depends on. Not part of the product's spec; this is what drives the agent through the files above.</p>
+          </div>
+          <div class="filedoc">
+            <div><span class="fname">BUILD-ORDER.md</span><span class="ftag">Procedure</span></div>
+            <p>The phase order for actually building the backend once you separately ask for real code — infrastructure first, domain logic later, close to the reverse of the interview's order and explained as such.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="guide-section reveal" id="tutorial">
+        <h2>Tutorial: build TaskFlow, a small CRUD API</h2>
+        <p class="lead">One example, start to finish — a tiny personal task tracker. Every answer below is a plausible real answer, so you can see the shape of the finished spec, then the finished API.</p>
+
+        <div class="steps">
+          <div class="step" id="tutorial-1">
+            <div class="step-num mono">1</div>
+            <div class="step-body">
+              <h3>Prerequisites</h3>
+              <p>An empty project folder, and a coding agent (Claude Code or otherwise) you can start a session in. Nothing else — no database running yet, no framework chosen yet.</p>
+            </div>
+          </div>
+
+          <div class="step" id="tutorial-2">
+            <div class="step-num mono">2</div>
+            <div class="step-body">
+              <h3>Install</h3>
+              <p>From inside that empty folder:</p>
+              <div class="code-card">
+                <div class="code-head">
+                  <span>macOS · Linux · git-bash · WSL</span>
+                  <button class="copy-btn" data-copy="curl -fsSL https://raw.githubusercontent.com/DMK980/Blueprints/main/install.sh | bash -s -- backend">Copy</button>
+                </div>
+                <pre class="mono">curl -fsSL https://raw.githubusercontent.com/DMK980/Blueprints/main/install.sh | bash -s -- backend</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="step" id="tutorial-3">
+            <div class="step-num mono">3</div>
+            <div class="step-body">
+              <h3>Run the interview</h3>
+              <p>Start a session and let it interview you. The root phase resolves fast for something this small:</p>
+              <div class="transcript">
+                <div class="qa"><div class="q">What does this product do?</div><div class="a">A personal task tracker. One user type — you sign in and manage your own list of tasks: add one, mark it done, edit it, delete it.</div></div>
+                <div class="qa"><div class="q">Is there a defining mechanism?</div><div class="a">No — plain CRUD, no ranking, no matching, nothing algorithmic. Say so plainly rather than inventing drama that isn't there.</div></div>
+                <div class="qa"><div class="q">Roles beyond a plain user?</div><div class="a">None.</div></div>
+                <div class="qa"><div class="q">Does money move through this system?</div><div class="a">No.</div></div>
+                <div class="qa"><div class="q">Does it call an LLM?</div><div class="a">No — <span class="mono">llm-integration.md</span> gets deleted.</div></div>
+              </div>
+              <p>Then each file, in order. Highlights:</p>
+              <div class="transcript">
+                <div class="qa"><div class="q">data-models.md — what entities?</div><div class="a">Just one: <span class="mono">tasks</span>. Each task belongs to exactly one user — no sharing, no collaboration.</div></div>
+                <div class="qa"><div class="q">data-models.md — primary keys?</div><div class="a">UUID. There's no reason to let anyone guess how many tasks exist by incrementing an id.</div></div>
+                <div class="qa"><div class="q">data-models.md — soft or hard delete?</div><div class="a">Hard-delete. Nothing else ever references a task, so there's nothing a soft-delete would protect.</div></div>
+                <div class="qa"><div class="q">auth.md — sign-in method?</div><div class="a">Email + password. No OAuth, no magic link — keep it simple.</div></div>
+                <div class="qa"><div class="q">auth.md — session-based or JWT?</div><div class="a">Session-based. A handful of users, no scaling pressure, and instant revocation on logout is worth more here than avoiding a lookup.</div></div>
+                <div class="qa"><div class="q">api-routes.md — user-facing actions?</div><div class="a">Create a task, list my tasks, get one, update one, delete one. Five verbs, five routes.</div></div>
+                <div class="qa"><div class="q">security-practices.md — any shared tables?</div><div class="a">None — <span class="mono">tasks</span> is strictly owned, so row-level security is a plain <span class="mono">owner_id = current_user_id</span> policy.</div></div>
+                <div class="qa"><div class="q">engineering-standards.md — the stack?</div><div class="a">Node.js + Express, PostgreSQL. Nothing above needed vector search, real-time updates, or background jobs — a small service is genuinely sufficient here, not a default.</div></div>
+              </div>
+              <p>Everything else (business-logic, error-handling, observability, testing) resolves quickly too — there's no real algorithm to document, just the shared error envelope, request logging, and a couple of concurrency-free test cases.</p>
+            </div>
+          </div>
+
+          <div class="step" id="tutorial-4">
+            <div class="step-num mono">4</div>
+            <div class="step-body">
+              <h3>What you get</h3>
+              <p>Short excerpts of the real generated spec for this example:</p>
+              <div class="code-card">
+                <div class="code-head"><span>rules/data-models.md (excerpt)</span></div>
+                <pre class="mono">### tasks
+id          uuid, pk           — not sequential, nothing to probe by guessing
+owner_id    uuid, fk users.id  — on delete: cascade (a task has no meaning without its owner)
+title       text, not null
+completed   boolean, not null, default false   — stored, nothing to derive it from
+created_at  timestamptz, not null, default now()
+updated_at  timestamptz, not null
+
+Hard-delete only. No deleted_at — nothing else ever references a task.</pre>
+              </div>
+              <div class="code-card" style="margin-top:1rem;">
+                <div class="code-head"><span>rules/api-routes.md (excerpt)</span></div>
+                <pre class="mono">### Tasks
+POST   /tasks       create a task for the caller
+GET    /tasks       list the caller's own tasks
+GET    /tasks/:id   404 if it isn't the caller's
+PATCH  /tasks/:id   update title/completed — 404 if it isn't the caller's
+DELETE /tasks/:id   404 if it isn't the caller's</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="step" id="tutorial-5">
+            <div class="step-num mono">5</div>
+            <div class="step-body">
+              <h3>Build it</h3>
+              <p>A separate, later ask — "now build the real backend." The agent works through <span class="mono">BUILD-ORDER.md</span>'s phases, one at a time, applied to this example:</p>
+              <ol class="phase-list">
+                <li><span class="n mono">01</span><span><b>Scaffold</b> — an Express app, a Postgres connection, the test/CI harness.</span></li>
+                <li><span class="n mono">02</span><span><b>Observability</b> — a request-id middleware, structured logs, <span class="mono">/healthz</span> and <span class="mono">/readyz</span>.</span></li>
+                <li><span class="n mono">03</span><span><b>Error handling</b> — one JSON error envelope, one global exception handler.</span></li>
+                <li><span class="n mono">04</span><span><b>Data models</b> — the <span class="mono">tasks</span> migration.</span></li>
+                <li><span class="n mono">05</span><span><b>Auth</b> — signup/login/logout, session cookie.</span></li>
+                <li><span class="n mono">06</span><span><b>Security</b> — the row-level-security policy on <span class="mono">tasks</span>, a login rate limit.</span></li>
+                <li><span class="n mono">07</span><span><b>Business logic</b> — nearly nothing here; a couple of input checks, tested directly.</span></li>
+                <li><span class="n mono">08</span><span><b>Routes</b> — the five task routes, wired to auth, the RLS policy, and the shared error envelope.</span></li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="step" id="tutorial-6">
+            <div class="step-num mono">6</div>
+            <div class="step-body">
+              <h3>Try it</h3>
+              <p>What you're left with is a real, working CRUD API:</p>
+              <div class="code-card">
+                <div class="code-head"><span>shell</span></div>
+                <pre class="mono">$ curl -c cookies.txt -X POST localhost:3000/auth/signup \
+    -d '{"email":"you@example.com","password":"correct-horse"}'
+
+$ curl -b cookies.txt -X POST localhost:3000/tasks \
+    -d '{"title":"Write the docs page"}'
+{"id":"9f2a...","title":"Write the docs page","completed":false}
+
+$ curl -b cookies.txt localhost:3000/tasks
+[{"id":"9f2a...","title":"Write the docs page","completed":false}]
+
+$ curl -b cookies.txt -X PATCH localhost:3000/tasks/9f2a... \
+    -d '{"completed":true}'
+{"id":"9f2a...","title":"Write the docs page","completed":true}
+
+$ curl -b cookies.txt -X DELETE localhost:3000/tasks/9f2a...</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="guide-section reveal" id="next">
+        <h2>Next steps</h2>
+        <p class="lead">Backend is the one blueprint issued so far. Frontend-web and frontend-mobile follow the same interview-then-draft pattern once they exist.</p>
+        <div class="jump" style="margin-top:1.25rem;">
+          <a class="btn btn-ghost" href="index.html#index">See the drawing index</a>
+          <a class="btn btn-ghost" href="https://github.com/DMK980/Blueprints#readme" target="_blank" rel="noopener">Read the README</a>
+          <a class="btn btn-ghost" href="https://github.com/DMK980/Blueprints" target="_blank" rel="noopener">View on GitHub</a>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <path d="M4 26 L16 5 L28 26 Z" stroke="var(--line)" stroke-width="1.6"/>
+            <path d="M4 26 H28" stroke="var(--line)" stroke-width="1.6"/>
+            <path d="M12 26 V17.5 L16 11 L20 17.5 V26" stroke="var(--accent)" stroke-width="1.6"/>
+          </svg>
+          BLUEPRINTS
+        </div>
+        <p class="footer-copy">A model-agnostic spec template, drafted before you build. Every rule any coding agent can follow, none of it tied to one.</p>
+      </div>
+      <div class="ftb">
+        <div class="row"><div>Project</div><div>Blueprints</div></div>
+        <div class="row"><div>Source</div><div><a href="https://github.com/DMK980/Blueprints" target="_blank" rel="noopener">github.com/DMK980/Blueprints</a></div></div>
+        <div class="row"><div>Sheet</div><div>Guide</div></div>
+        <div class="row"><div>Rev</div><div>1</div></div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>Open source, hosted on GitHub.</span>
+      <a href="https://github.com/DMK980/Blueprints" target="_blank" rel="noopener">github.com/DMK980/Blueprints</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var els = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.1 });
+      els.forEach(function (el) { io.observe(el); });
+    } else {
+      els.forEach(function (el) { el.classList.add('is-visible'); });
+    }
+
+    var hamburgerBtn = document.getElementById('hamburger-btn');
+    var mobileMenu = document.getElementById('mobile-menu');
+    hamburgerBtn.addEventListener('click', function () {
+      var isOpen = mobileMenu.classList.toggle('open');
+      hamburgerBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    mobileMenu.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () {
+        mobileMenu.classList.remove('open');
+        hamburgerBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    document.querySelectorAll('.copy-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var text = btn.getAttribute('data-copy');
+        var done = function () {
+          var original = btn.textContent;
+          btn.textContent = 'Copied';
+          setTimeout(function () { btn.textContent = original; }, 1400);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done).catch(done);
+        } else {
+          done();
+        }
+      });
+    });
+
+    /* scroll-spy for the on-page contents nav */
+    var tocLinks = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+    var sections = tocLinks.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+    if ('IntersectionObserver' in window && sections.length) {
+      var spy = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          var idx = sections.indexOf(entry.target);
+          if (idx === -1) return;
+          if (entry.isIntersecting) {
+            tocLinks.forEach(function (a) { a.classList.remove('active'); });
+            tocLinks[idx].classList.add('active');
+          }
+        });
+      }, { rootMargin: '-40% 0px -50% 0px' });
+      sections.forEach(function (s) { if (s) spy.observe(s); });
+    }
+  })();
+</script>
+</body>
+</html>
