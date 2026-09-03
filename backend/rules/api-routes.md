@@ -31,8 +31,11 @@ return, not the envelope itself.
 
 1. What are the actual user-facing actions in this product? List them as
    verbs (generate, purchase, rate, report, delete...) before turning them
-   into routes — this list is also what drives `rules/data-models.md`'s
-   entity list and `rules/business-logic.md`'s algorithms.
+   into routes. These are the same actions already implicit in the root
+   product description and worked out in detail in
+   `rules/data-models.md`'s entities and `rules/business-logic.md`'s
+   algorithms — this step is about translating them into concrete route
+   shapes, not discovering them for the first time.
 2. Which of these need a webhook instead of a normal user-facing route (a
    payment provider confirming a purchase, an ad network confirming a
    view)? Webhooks get a different trust model — verified by the sender's

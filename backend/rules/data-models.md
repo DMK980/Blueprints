@@ -25,6 +25,38 @@ cached copy needs to be kept in sync forever and *will* drift. Default
 to live computation; only cache when profiling actually shows a real
 bottleneck.
 
+**Status/enum columns**: this file defines the column and its legal
+values. The transition rules between those values — what can move to
+what, and in what order — belong in `rules/business-logic.md`'s
+state-machine coverage, not duplicated here.
+
+**Primary keys**: sequential integer or UUID, and why. A sequential id is
+enumerable — a client can guess `/orders/1235` exists just by
+incrementing — which still matters even with row-level security in place
+(RLS stops the read, but an enumerable id already leaked "how many of
+these exist" and invites probing). Decide this deliberately per table,
+don't default to whatever the ORM picks.
+
+**Timestamps and deletion**: the `created_at`/`updated_at` convention, and
+explicitly, per table if it genuinely varies — soft-delete (a nullable
+`deleted_at`/status flag) or hard-delete. This is the actual mechanism
+behind "a hidden/moderated row must still be readable by whoever already
+has legitimate access to it" below — say which columns implement it.
+
+**Foreign-key delete behavior**: for every foreign key from a user-owned
+or shared table, state cascade, restrict, or null-out on parent delete,
+and confirm it matches the ownership/sharing answer in question 2 below —
+a shared, multi-contributor row shouldn't silently vanish just because
+one contributor's account is deleted. This is the schema-level mechanism
+`rules/auth.md`'s account-deletion policy and `rules/api-routes.md`'s
+delete-account route actually get enforced against, not just a detail of
+this file.
+
+If money moves through this system: amounts are integers in the smallest
+currency unit (cents), never a float — floating-point rounding error
+compounds across many transactions, a distinct failure mode from "no
+ledger to audit against" below.
+
 ## Questions to answer
 
 1. What are the actual entities this product needs to persist? Start from
@@ -48,6 +80,16 @@ bottleneck.
    current-balance column? A cached balance without a ledger behind it is
    very hard to audit or debug later — decide this now, it's expensive to
    retrofit.
+6. Sequential integer or UUID primary keys, and why — factor in whether an
+   enumerable id would leak anything (row counts, probing for other
+   users' records) beyond what row-level security already blocks.
+7. What's the soft-delete vs hard-delete convention, per table if it
+   varies? Does every table need `created_at`/`updated_at`, or only ones
+   where it's actually used?
+8. For each foreign key on a table flagged as user-owned or shared
+   (question 2): cascade, restrict, or null out on parent delete? Flag any
+   case where this needs to differ from a plain "delete everything"
+   default because the row is shared.
 
 ## Split into more files once this grows
 
@@ -64,4 +106,7 @@ organized."
 if violated, would cause the most damage. Example shape: "A
 hidden/moderated row must still be readable by whoever already has
 legitimate access to it — hiding something should only ever affect *future*
-exposure, never claw back access already granted."]
+exposure, never claw back access already granted." Other likely
+candidates: a money amount is never a float; a foreign key from a shared
+row never cascade-deletes just because one contributing user's account is
+deleted, without that being an explicit decision.]

@@ -41,9 +41,13 @@ tier appropriate to expected volume, not "TBD."
 
 ## Questions to answer
 
-1. What does this product actually need from its stack — a database with
-   vector search? Real-time updates? Heavy background processing? Let the
-   actual requirements pick the stack, not convention.
+1. **The stack.** By the time this file is reached (see `INTERVIEW.md`),
+   `data-models.md`, `business-logic.md`, `auth.md`, `api-routes.md`,
+   `error-handling.md`, and `security-practices.md` are already answered
+   — use what they actually revealed (a database with vector search?
+   real-time updates? heavy background processing? a payment/IAP flow?
+   transactional email?) to pick the stack. Don't default to whatever the
+   last project used, and don't guess ahead of what's actually needed.
 2. What's the cheapest hosting setup that's genuinely sufficient for
    expected early-stage traffic? Note the concrete trigger for upgrading
    past it (e.g. "once actually running more than one instance"), not a
