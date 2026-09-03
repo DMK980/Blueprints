@@ -11,16 +11,12 @@ imports this file and adds one extra step that only applies there.
 
 ## What you do, in order
 
-1. **Interview the user** using the checklist below, one question at a
-   time (not a wall of questions at once) — this is a conversation, not a
-   form. For every question except what the product does and how the
-   mechanism works, you MUST invoke the host's multiple-choice tool
-   (`AskQuestion` in Cursor, Claude Code's question tool) with a few
-   options — the write-in/Other is built in, don't duplicate it. Do not
-   ask those as a free-text chat message; a numbered list in prose is
-   not a picker. If no such tool exists, then print numbered options
-   ending in `Other`. Then open each applicable file in `rules/` and
-   work through its own "Questions to answer" section the same way.
+1. **Interview the user** by opening `INTERVIEW.md` in this directory and
+   following it in order, one question at a time (not a wall of questions
+   at once) — this is a conversation, not a form. Its ordering is
+   deliberate: don't reorder it, don't jump ahead to a rules file it
+   hasn't reached yet. That file also covers the picker-tool requirement
+   for how each question gets asked.
 2. **Write this file's opening paragraph** — replace the `[REPLACE: ...]`
    block below with the real one-paragraph description, from the answers
    you got. If there's no genuine defining mechanism, say so plainly
@@ -46,6 +42,19 @@ imports this file and adds one extra step that only applies there.
    unless the user separately asks for that — this procedure produces the
    spec, not the app.
 
+## Building the real app, once asked
+
+This only applies later, once the user separately asks you to actually
+build the backend — a distinct request from the spec interview above, not
+something step 6 implies you should keep going into.
+
+Even when asked to build the whole thing in one go, **do not implement
+the entire spec in one pass.** Open `BUILD-ORDER.md` in this directory and
+work through it one phase at a time, finishing (and testing) each phase
+before starting the next — its order is dependency-driven, not
+product-specific, and deliberately different from `INTERVIEW.md`'s order
+(that file explains why).
+
 ## Where to look / what to build
 
 The nine rows below apply to essentially any real backend. `llm-integration`
@@ -68,28 +77,11 @@ otherwise.
 [REPLACE: one paragraph on what this product does and its defining
 mechanism, if it has one — written here once step 2 above is done.]
 
-## Interview checklist (ask these first, before opening any rules file)
+## Interview checklist
 
-1. What does this product do, in two or three sentences? Who's the user,
-   what do they come here to do?
-2. Is there a defining mechanism — something about how the backend works
-   that isn't obvious from "it's a CRUD app for X"? If yes, that's this
-   file's opening paragraph and probably drives `business-logic.md`.
-3. What user roles exist beyond a plain user (admin, moderator, ...)?
-4. Does real money move through this system (subscriptions, credits,
-   in-app purchases, a marketplace)?
-5. Does this product call an LLM or another external AI service? Default
-   assumption is no — only keep `llm-integration.md` if the answer is
-   genuinely yes.
-6. What's the stack? Don't assume one — reason from what this product
-   actually needs (a vector-search database, real-time updates, heavy
-   background jobs) rather than defaulting to whatever the last project
-   used. `engineering-standards.md`'s own "Questions to answer" goes
-   deeper on this.
-
-Each rules file has its own follow-up questions scoped to that area —
-answer these six first, since several of the others don't make sense until
-these are settled.
+See `INTERVIEW.md` in this directory — the full ordered interview lives
+there, not here, so it can carry its own reasoning for why each question
+comes where it does without bloating this file.
 
 ## Writing style for every file you produce
 
